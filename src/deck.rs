@@ -14,12 +14,14 @@ impl Deck {
     pub fn new() -> Self {
         let suits: Vec<Suit> = vec![Suit::Clubs, Suit::Diamonds, Suit::Hearts, Suit::Spades];
         let face_cards: Vec<FaceCard> = vec![FaceCard::Jack, FaceCard::Queen, FaceCard::King];
-        let base_cards: Vec<String> = (1..=10).map(|c: usize| c.to_string()).collect();
+        let mut playing_cards: Vec<String> = (2..=10).map(|c: usize| c.to_string()).collect();
+        let ace: String = String::from("Ace");
+        playing_cards.push(ace);
 
         let cards: Vec<String> = face_cards
             .iter()
             .map(|card: &FaceCard| card.to_string())
-            .chain(base_cards)
+            .chain(playing_cards)
             .collect();
 
         let deck_suits: Vec<String> = suits.iter().map(|s: &Suit| s.to_string()).collect();
