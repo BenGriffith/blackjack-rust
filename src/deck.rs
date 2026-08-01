@@ -14,8 +14,8 @@ impl Default for Deck {
 impl Deck {
     pub fn new() -> Self {
         let cards: Vec<String> = Card::get_cards();
-        let deck_suits: Vec<String> = Card::get_suits();
-        let deck_cards: Vec<Card> = Self::set_deck(&deck_suits, &cards);
+        let suits: Vec<String> = Card::get_suits();
+        let deck_cards: Vec<Card> = Self::set_deck(&suits, &cards);
         Self { cards: deck_cards }
     }
 
