@@ -48,7 +48,9 @@ pub fn get_card_value(card: &str) -> Result<usize, CardError> {
         "Ace" => Ok(11),
         _ => match card.parse::<usize>() {
             Ok(n) => Ok(n),
-            Err(_) => Err(CardError::InvalidNumber),
+            Err(_) => Err(CardError::InvalidNumber {
+                value: card.to_string(),
+            }),
         },
     }
 }
