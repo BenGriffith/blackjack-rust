@@ -1,7 +1,8 @@
 mod card;
 mod deck;
 
-pub use card::FaceCard;
+pub use card::Card;
+pub use deck::Deck;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
