@@ -1,3 +1,4 @@
+use crate::error::CardError;
 use std::fmt;
 
 pub enum Suit {
@@ -38,6 +39,18 @@ impl fmt::Display for FaceCard {
 pub struct Card {
     pub suit: String,
     pub rank: String,
+    pub value: usize,
+}
+
+pub fn get_card_value(card: &str) -> Result<usize, CardError> {
+    match card {
+        "Jack" | "Queen" | "King" => Ok(10),
+        "Ace" => Ok(11),
+        _ => match card.parse::<usize>() {
+            Ok(n) => Ok(n),
+            Err(_) => Err(CardError::InvalidNumber),
+        },
+    }
 }
 
 impl Card {
@@ -60,9 +73,5 @@ impl Card {
             .collect();
 
         cards
-    }
-
-    pub fn get_card_value() -> usize {
-        unimplemented!();
     }
 }

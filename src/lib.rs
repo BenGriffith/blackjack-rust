@@ -1,8 +1,10 @@
 mod card;
 mod deck;
+mod error;
 
 pub use card::Card;
 pub use deck::Deck;
+pub use error::CardError;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
