@@ -1,5 +1,5 @@
+use crate::card::{get_card_value, Card};
 use crate::CardError;
-use crate::card::{Card, get_card_value};
 
 #[derive(Debug, Clone)]
 pub struct Deck {
@@ -37,5 +37,92 @@ impl Deck {
             })
             .collect();
         deck_cards
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+    use std::collections::HashSet;
+
+    #[test]
+    fn test_deck_length() {
+        let deck = Deck::new();
+        assert_eq!(deck.cards.len(), 52);
+    }
+
+    #[test]
+    fn test_deck_suits() {
+        let deck = Deck::new();
+        let suits: HashSet<String> = deck
+            .cards
+            .iter()
+            .filter_map(|card_result| match card_result {
+                Ok(card) => Some(card.suit.clone()),
+                Err(_) => None,
+            })
+            .collect();
+        assert_eq!(suits.len(), 4);
+        assert_eq!(suits.contains("Hearts"), true);
+        assert_eq!(suits.contains("Diamonds"), true);
+        assert_eq!(suits.contains("Clubs"), true);
+        assert_eq!(suits.contains("Spades"), true);
+    }
+
+    #[test]
+    fn test_deck_suits_face_cards() {
+        let deck = Deck::new();
+        let face_cards: HashMap<String, Vec<String>> = deck
+            .cards
+            .iter()
+            .filter_map(|card_result| match card_result {
+                Ok(card) => {
+                    if card.rank == "Jack" || card.rank == "Queen" || card.rank == "King" {
+                        Some((card.suit.clone(), card.rank.clone()))
+                    } else {
+                        None
+                    }
+                }
+                Err(_) => None,
+            })
+            .fold(HashMap::new(), |mut acc, (suit, rank)| {
+                acc.entry(suit).or_insert_with(Vec::new).push(rank);
+                acc
+            });
+
+        assert_eq!(face_cards.len(), 4);
+        assert_eq!(face_cards.get("Hearts").unwrap().len(), 3);
+        assert_eq!(face_cards.get("Diamonds").unwrap().len(), 3);
+        assert_eq!(face_cards.get("Clubs").unwrap().len(), 3);
+        assert_eq!(face_cards.get("Spades").unwrap().len(), 3);
+    }
+
+    #[test]
+    fn test_deck_rank() {
+        let deck = Deck::new();
+        let ranks: HashSet<String> = deck
+            .cards
+            .iter()
+            .filter_map(|card_result| match card_result {
+                Ok(card) => Some(card.rank.clone()),
+                Err(_) => None,
+            })
+            .collect();
+        assert_eq!(ranks.len(), 13);
+    }
+
+    #[test]
+    fn test_deck_card_values_sum() {
+        let deck = Deck::new();
+        let total_value: usize = deck
+            .cards
+            .iter()
+            .filter_map(|card_result| match card_result {
+                Ok(card) => Some(card.value),
+                Err(_) => None,
+            })
+            .sum();
+        assert_eq!(total_value, 380);
     }
 }
