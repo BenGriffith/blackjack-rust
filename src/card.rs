@@ -77,3 +77,74 @@ impl Card {
         cards
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn get_card() -> Card {
+        let card = Card {
+            suit: String::from("Hearts"),
+            rank: String::from("5"),
+            value: 5,
+        };
+        card
+    }
+
+    #[test]
+    fn test_card() {
+        let card = get_card();
+        assert_eq!(card.suit, String::from("Hearts"));
+        assert_eq!(card.rank, "5".to_string());
+        assert_eq!(card.value, 5);
+    }
+
+    #[test]
+    fn test_get_suits() {
+        let suits: Vec<String> = Card::get_suits();
+        let expected: Vec<String> = vec![
+            "Clubs".to_string(),
+            "Diamonds".to_string(),
+            "Hearts".to_string(),
+            "Spades".to_string(),
+        ];
+        assert_eq!(suits, expected);
+    }
+
+    #[test]
+    fn test_get_cards() {
+        let cards: Vec<String> = Card::get_cards();
+        let expected: Vec<String> = vec![
+            "Jack".to_string(),
+            "Queen".to_string(),
+            "King".to_string(),
+            "2".to_string(),
+            "3".to_string(),
+            "4".to_string(),
+            "5".to_string(),
+            "6".to_string(),
+            "7".to_string(),
+            "8".to_string(),
+            "9".to_string(),
+            "10".to_string(),
+            "Ace".to_string(),
+        ];
+        assert_eq!(cards, expected);
+    }
+
+    #[test]
+    fn test_get_card_value() -> Result<(), CardError> {
+        let jack_value: usize = get_card_value(&"Jack")?;
+        let queen_value: usize = get_card_value(&"Queen")?;
+        let king_value: usize = get_card_value(&"King")?;
+        let ace_value: usize = get_card_value(&"Ace")?;
+        let card_value: usize = get_card_value(&"9")?;
+
+        assert_eq!(jack_value, 10);
+        assert_eq!(queen_value, 10);
+        assert_eq!(king_value, 10);
+        assert_eq!(ace_value, 11);
+        assert_eq!(card_value, 9);
+        Ok(())
+    }
+}
