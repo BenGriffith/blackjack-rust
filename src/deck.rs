@@ -1,5 +1,5 @@
-use crate::card::{get_card_value, Card};
 use crate::CardError;
+use crate::card::{Card, get_card_value};
 
 #[derive(Debug, Clone)]
 pub struct Deck {
@@ -43,9 +43,9 @@ impl Deck {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::vec::Vec;
     use std::collections::HashMap;
     use std::collections::HashSet;
+    use std::vec::Vec;
 
     #[test]
     fn test_deck_length() {
@@ -77,7 +77,9 @@ mod tests {
                 let mut face_cards: Vec<String> = Vec::new();
 
                 for _card in &deck.cards {
-                    if let Ok(face_card) = _card && face_card.suit == suit.suit {
+                    if let Ok(face_card) = _card
+                        && face_card.suit == suit.suit
+                    {
                         match face_card.rank.as_str() {
                             "Jack" | "Queen" | "King" => face_cards.push(face_card.rank.clone()),
                             _ => continue,
@@ -105,19 +107,19 @@ mod tests {
                 let mut nonface_cards: Vec<String> = vec![];
 
                 for card in &deck.cards {
-                    if let Ok(c) = card && c.suit == s.suit {
-                        let is_nonface_card = !matches!(c.rank.as_str(), "Jack" | "Queen" | "King"); 
-                            if is_nonface_card {
-                                nonface_cards.push(c.rank.clone());
+                    if let Ok(c) = card
+                        && c.suit == s.suit
+                    {
+                        let is_nonface_card = !matches!(c.rank.as_str(), "Jack" | "Queen" | "King");
+                        if is_nonface_card {
+                            nonface_cards.push(c.rank.clone());
                         }
                     }
                 }
                 suit_nonface_cards.insert(s.suit.clone(), nonface_cards);
             }
         }
-        let hearts_expected = vec![
-            "2", "3", "4", "5", "6", "7", "8", "9", "10", "Ace"
-        ]
+        let hearts_expected = vec!["2", "3", "4", "5", "6", "7", "8", "9", "10", "Ace"]
             .into_iter()
             .map(String::from)
             .collect::<Vec<_>>();
@@ -133,12 +135,7 @@ mod tests {
         let total_value: usize = deck
             .cards
             .iter()
-            .map(|c| {
-                if let Ok(card) = c {
-                    card.value
-                } else {
-                    0
-                }})
+            .map(|c| if let Ok(card) = c { card.value } else { 0 })
             .sum();
         assert_eq!(total_value, 380);
     }
