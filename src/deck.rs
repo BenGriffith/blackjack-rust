@@ -115,7 +115,16 @@ mod tests {
                 suit_nonface_cards.insert(s.suit.clone(), nonface_cards);
             }
         }
-        println!("{:?}", suit_nonface_cards);
+        let hearts_expected = vec![
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "Ace"
+        ]
+            .into_iter()
+            .map(String::from)
+            .collect::<Vec<_>>();
+
+        assert_eq!(suit_nonface_cards.len(), 4);
+        assert_eq!(suit_nonface_cards.get("Hearts").unwrap().len(), 10);
+        assert_eq!(suit_nonface_cards.get("Hearts").unwrap(), &hearts_expected);
     }
 
     #[test]
