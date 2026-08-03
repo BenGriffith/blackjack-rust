@@ -1,6 +1,7 @@
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
+// Custom error type for card validation (e.g., user input)
 pub enum CardError {
     InvalidNumber { value: String },
 }
