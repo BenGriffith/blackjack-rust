@@ -1,0 +1,38 @@
+repos:
+  # Generic file hygiene hooks (fast)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+
+  # Rust hooks
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt (check)
+        entry: cargo fmt --all -- --check
+        language: system
+        pass_filenames: false
+        types: [rust]
+        stages: [pre-commit]
+
+      - id: cargo-clippy
+        name: cargo clippy (deny warnings)
+        entry: cargo clippy --all-targets --all-features -- -D warnings
+        language: system
+        pass_filenames: false
+        types: [rust]
+        stages: [pre-commit]
+
+      - id: cargo-test
+        name: cargo test (full)
+        entry: cargo test --all-features
+        language: system
+        pass_filenames: false
+        types: [rust]
+        stages: [pre-push]
