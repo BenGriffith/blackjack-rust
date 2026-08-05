@@ -24,11 +24,11 @@ impl HandState {
         Ok(self.hand_value)
     }
 
-    pub fn hand(&self) -> &Vec<Card> {
+    pub fn get_hand(&self) -> &Vec<Card> {
         &self.hand
     }
 
-    pub fn hand_value(&self) -> &isize {
+    pub fn get_hand_value(&self) -> &isize {
         &self.hand_value
     }
 }
