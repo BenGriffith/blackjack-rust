@@ -83,12 +83,11 @@ mod tests {
     use super::*;
 
     fn get_card() -> Card {
-        let card = Card {
+        Card {
             suit: String::from("Hearts"),
             rank: String::from("5"),
             value: 5,
-        };
-        card
+        }
     }
 
     #[test]
@@ -134,11 +133,11 @@ mod tests {
 
     #[test]
     fn test_get_card_value() -> Result<(), CardError> {
-        let jack_value: usize = get_card_value(&"Jack")?;
-        let queen_value: usize = get_card_value(&"Queen")?;
-        let king_value: usize = get_card_value(&"King")?;
-        let ace_value: usize = get_card_value(&"Ace")?;
-        let card_value: usize = get_card_value(&"9")?;
+        let jack_value: usize = get_card_value("Jack")?;
+        let queen_value: usize = get_card_value("Queen")?;
+        let king_value: usize = get_card_value("King")?;
+        let ace_value: usize = get_card_value("Ace")?;
+        let card_value: usize = get_card_value("9")?;
 
         assert_eq!(jack_value, 10);
         assert_eq!(queen_value, 10);
