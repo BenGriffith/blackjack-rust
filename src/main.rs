@@ -1,12 +1,6 @@
-use blackjack_rust::Card;
-use blackjack_rust::CardError;
-use blackjack_rust::Deck;
+use blackjack_rust::Game;
 
 fn main() {
     println!("Welcome to Blackjack!");
-    let deck: Deck = Deck::default();
-    let deck_cards: Vec<Result<Card, CardError>> = deck.cards;
-    for card in &deck_cards {
-        println!("{:?}", card);
-    }
+    let _game = Game::new();
 }

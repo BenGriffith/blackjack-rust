@@ -1,5 +1,5 @@
-use crate::CardError;
 use crate::card::{Card, get_card_value};
+use crate::error::CardError;
 
 #[derive(Debug, Clone)]
 pub struct Deck {
@@ -28,11 +28,7 @@ impl Deck {
                     .iter()
                     .map(move |card: &String| -> Result<Card, CardError> {
                         let card_value: usize = get_card_value(card)?;
-                        Ok(Card {
-                            suit: suit.to_string(),
-                            rank: card.to_string(),
-                            value: card_value,
-                        })
+                        Ok(Card::new(suit.to_string(), card.to_string(), card_value))
                     })
             })
             .collect();
@@ -57,14 +53,14 @@ mod tests {
     fn test_deck_suits() {
         let deck: Deck = Deck::new();
         let mut suits: HashSet<String> = HashSet::new();
-        for card in deck.cards {
-            suits.insert(card.unwrap().suit);
+        for card in deck.cards.iter().flatten() {
+            suits.insert(card.suit().to_string());
         }
         assert_eq!(suits.len(), 4);
-        assert_eq!(suits.contains("Hearts"), true);
-        assert_eq!(suits.contains("Diamonds"), true);
-        assert_eq!(suits.contains("Clubs"), true);
-        assert_eq!(suits.contains("Spades"), true);
+        assert!(suits.contains("Hearts"));
+        assert!(suits.contains("Diamonds"));
+        assert!(suits.contains("Clubs"));
+        assert!(suits.contains("Spades"));
     }
 
     #[test]
@@ -72,22 +68,19 @@ mod tests {
         let deck: Deck = Deck::new();
         let mut suit_face_cards: HashMap<String, Vec<String>> = HashMap::new();
 
-        for _suit in &deck.cards {
-            if let Ok(suit) = _suit {
-                let mut face_cards: Vec<String> = Vec::new();
-
-                for _card in &deck.cards {
-                    if let Ok(face_card) = _card
-                        && face_card.suit == suit.suit
-                    {
-                        match face_card.rank.as_str() {
-                            "Jack" | "Queen" | "King" => face_cards.push(face_card.rank.clone()),
-                            _ => continue,
-                        }
+        for suit in deck.cards.iter().flatten() {
+            let mut face_cards: Vec<String> = Vec::new();
+            for _card in &deck.cards {
+                if let Ok(face_card) = _card
+                    && face_card.suit() == suit.suit()
+                {
+                    match face_card.rank().as_str() {
+                        "Jack" | "Queen" | "King" => face_cards.push(face_card.rank().clone()),
+                        _ => continue,
                     }
                 }
-                suit_face_cards.insert(suit.suit.clone(), face_cards);
             }
+            suit_face_cards.insert(suit.suit().clone(), face_cards);
         }
 
         assert_eq!(suit_face_cards.len(), 4);
@@ -102,22 +95,20 @@ mod tests {
         let deck: Deck = Deck::new();
         let mut suit_nonface_cards: HashMap<String, Vec<String>> = HashMap::new();
 
-        for suit in &deck.cards {
-            if let Ok(s) = suit {
-                let mut nonface_cards: Vec<String> = vec![];
+        for s in deck.cards.iter().flatten() {
+            let mut nonface_cards: Vec<String> = vec![];
 
-                for card in &deck.cards {
-                    if let Ok(c) = card
-                        && c.suit == s.suit
-                    {
-                        let is_nonface_card = !matches!(c.rank.as_str(), "Jack" | "Queen" | "King");
-                        if is_nonface_card {
-                            nonface_cards.push(c.rank.clone());
-                        }
+            for card in &deck.cards {
+                if let Ok(c) = card
+                    && c.suit() == s.suit()
+                {
+                    let is_nonface_card = !matches!(c.rank().as_str(), "Jack" | "Queen" | "King");
+                    if is_nonface_card {
+                        nonface_cards.push(c.rank().clone());
                     }
                 }
-                suit_nonface_cards.insert(s.suit.clone(), nonface_cards);
             }
+            suit_nonface_cards.insert(s.suit().clone(), nonface_cards);
         }
         let hearts_expected = vec!["2", "3", "4", "5", "6", "7", "8", "9", "10", "Ace"]
             .into_iter()
@@ -135,7 +126,7 @@ mod tests {
         let total_value: usize = deck
             .cards
             .iter()
-            .map(|c| if let Ok(card) = c { card.value } else { 0 })
+            .map(|c| if let Ok(card) = c { card.value() } else { &0 })
             .sum();
         assert_eq!(total_value, 380);
     }
