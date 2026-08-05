@@ -4,8 +4,8 @@ use std::vec::Vec;
 
 #[derive(Debug, Clone)]
 pub struct HandState {
-    pub hand: Vec<Card>,
-    pub hand_value: isize,
+    hand: Vec<Card>,
+    hand_value: isize,
 }
 
 impl HandState {
@@ -16,17 +16,25 @@ impl HandState {
         }
     }
 
-    pub fn add_card(&mut self, value: isize) -> Result<isize, GameError> {
-        if value < 0 {
+    pub fn calculate_hand_value(&mut self, value: isize) -> Result<isize, GameError> {
+        if value <= 0 {
             return Err(GameError::InvalidScore);
         }
         self.hand_value += value;
         Ok(self.hand_value)
     }
+
+    pub fn hand(&self) -> &Vec<Card> {
+        &self.hand
+    }
+
+    pub fn hand_value(&self) -> &isize {
+        &self.hand_value
+    }
 }
 
 pub struct Player {
-    pub bet: isize,
+    bet: isize,
     pub hand: HandState,
 }
 
@@ -44,8 +52,8 @@ impl Player {
         }
     }
 
-    pub fn bet(&mut self, value: isize) -> Result<isize, GameError> {
-        if value < 0 {
+    pub fn place_bet(&mut self, value: isize) -> Result<isize, GameError> {
+        if value <= 0 {
             return Err(GameError::InvalidBet);
         }
         self.bet = value;

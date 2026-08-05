@@ -37,9 +37,9 @@ impl fmt::Display for FaceCard {
 
 #[derive(Debug, Clone)]
 pub struct Card {
-    pub suit: String,
-    pub rank: String,
-    pub value: usize,
+    suit: String,
+    rank: String,
+    value: usize,
 }
 
 pub fn get_card_value(card: &str) -> Result<usize, CardError> {
@@ -56,6 +56,22 @@ pub fn get_card_value(card: &str) -> Result<usize, CardError> {
 }
 
 impl Card {
+    pub fn new(suit: String, rank: String, value: usize) -> Self {
+        Self { suit, rank, value }
+    }
+
+    pub fn suit(&self) -> &String {
+        &self.suit
+    }
+
+    pub fn rank(&self) -> &String {
+        &self.rank
+    }
+
+    pub fn value(&self) -> &usize {
+        &self.value
+    }
+
     pub fn get_suits() -> Vec<String> {
         let suits: Vec<Suit> = vec![Suit::Clubs, Suit::Diamonds, Suit::Hearts, Suit::Spades];
         let deck_suits: Vec<String> = suits.iter().map(|s: &Suit| s.to_string()).collect();

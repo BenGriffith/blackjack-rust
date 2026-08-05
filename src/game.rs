@@ -2,9 +2,9 @@ use crate::deck::Deck;
 use crate::person::{Dealer, Player};
 
 pub struct Game {
-    pub deck: Deck,
-    pub dealer: Dealer,
-    pub player: Player,
+    deck: Deck,
+    dealer: Dealer,
+    player: Player,
 }
 
 impl Default for Game {
@@ -20,5 +20,17 @@ impl Game {
             dealer: Dealer::new(),
             player: Player::new(),
         }
+    }
+
+    pub fn deck(&self) -> &Deck {
+        &self.deck
+    }
+
+    pub fn dealer(&self) -> &Dealer {
+        &self.dealer
+    }
+
+    pub fn player(&self) -> &Player {
+        &self.player
     }
 }
