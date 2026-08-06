@@ -1,4 +1,4 @@
-use crate::card::{Card, get_card_value};
+use crate::card::{Card, Rank, Suit, get_card_value};
 use crate::error::CardError;
 
 #[derive(Debug, Clone)]
@@ -14,22 +14,20 @@ impl Default for Deck {
 
 impl Deck {
     pub fn new() -> Self {
-        let cards: Vec<String> = Card::get_cards();
-        let suits: Vec<String> = Card::get_suits();
+        let cards: Vec<Rank> = Card::get_cards();
+        let suits: Vec<Suit> = Card::get_suits();
         let deck_cards: Vec<Result<Card, CardError>> = Self::set_deck(&suits, &cards);
         Self { cards: deck_cards }
     }
 
-    fn set_deck(suits: &[String], cards: &[String]) -> Vec<Result<Card, CardError>> {
+    fn set_deck(suits: &[Suit], cards: &[Rank]) -> Vec<Result<Card, CardError>> {
         let deck_cards: Vec<Result<Card, CardError>> = suits
             .iter()
-            .flat_map(|suit: &String| {
-                cards
-                    .iter()
-                    .map(move |card: &String| -> Result<Card, CardError> {
-                        let card_value: usize = get_card_value(card)?;
-                        Ok(Card::new(suit.to_string(), card.to_string(), card_value))
-                    })
+            .flat_map(|suit| {
+                cards.iter().map(|card| -> Result<Card, CardError> {
+                    let card_value: usize = get_card_value(card)?;
+                    Ok(Card::new(suit.clone(), card.clone(), card_value))
+                })
             })
             .collect();
         deck_cards
@@ -74,13 +72,15 @@ mod tests {
                 if let Ok(face_card) = _card
                     && face_card.suit() == suit.suit()
                 {
-                    match face_card.rank().as_str() {
-                        "Jack" | "Queen" | "King" => face_cards.push(face_card.rank().clone()),
+                    match face_card.rank() {
+                        Rank::Jack | Rank::Queen | Rank::King => {
+                            face_cards.push(face_card.rank().to_string())
+                        }
                         _ => continue,
                     }
                 }
             }
-            suit_face_cards.insert(suit.suit().clone(), face_cards);
+            suit_face_cards.insert(suit.suit().to_string(), face_cards);
         }
 
         assert_eq!(suit_face_cards.len(), 4);
@@ -102,13 +102,14 @@ mod tests {
                 if let Ok(c) = card
                     && c.suit() == s.suit()
                 {
-                    let is_nonface_card = !matches!(c.rank().as_str(), "Jack" | "Queen" | "King");
+                    let is_nonface_card =
+                        !matches!(c.rank(), Rank::Jack | Rank::Queen | Rank::King);
                     if is_nonface_card {
-                        nonface_cards.push(c.rank().clone());
+                        nonface_cards.push(c.rank().to_string());
                     }
                 }
             }
-            suit_nonface_cards.insert(s.suit().clone(), nonface_cards);
+            suit_nonface_cards.insert(s.suit().to_string(), nonface_cards);
         }
         let hearts_expected = vec!["2", "3", "4", "5", "6", "7", "8", "9", "10", "Ace"]
             .into_iter()
