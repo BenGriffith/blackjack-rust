@@ -3,7 +3,7 @@ use crate::error::CardError;
 
 #[derive(Debug, Clone)]
 pub struct Deck {
-    pub cards: Vec<Result<Card, CardError>>,
+    cards: Vec<Result<Card, CardError>>,
 }
 
 impl Default for Deck {
@@ -31,6 +31,10 @@ impl Deck {
             })
             .collect();
         deck_cards
+    }
+
+    pub fn cards(&self) -> &Vec<Result<Card, CardError>> {
+        &self.cards
     }
 }
 

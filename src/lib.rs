@@ -1,12 +1,11 @@
 mod card;
 mod deck;
 mod error;
-mod game;
+pub mod game;
 mod person;
 
-pub use card::Card;
+pub use card::{Card, Rank, Suit};
 pub use deck::Deck;
-pub use error::CardError;
-pub use error::GameError;
+pub use error::{CardError, GameError};
 pub use game::Game;
 pub use person::{Dealer, Player};
