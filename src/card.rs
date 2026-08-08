@@ -64,22 +64,10 @@ pub struct Card {
     value: usize,
 }
 
-pub fn get_card_value(rank: &Rank) -> Result<usize, CardError> {
-    match rank {
-        Rank::Jack | Rank::Queen | Rank::King => Ok(10),
-        Rank::Ace => Ok(11),
-        _ => match rank.to_string().parse::<usize>() {
-            Ok(n) => Ok(n),
-            Err(_) => Err(CardError::InvalidNumber {
-                value: rank.to_string(),
-            }),
-        },
-    }
-}
-
 impl Card {
-    pub fn new(suit: Suit, rank: Rank, value: usize) -> Self {
-        Self { suit, rank, value }
+    pub fn new(suit: Suit, rank: Rank) -> Result<Self, CardError> {
+        let value: usize = Self::get_card_value(&rank)?;
+        Ok(Self { suit, rank, value })
     }
 
     pub fn suit(&self) -> &Suit {
@@ -116,6 +104,19 @@ impl Card {
             Rank::Ace,
         ];
         rank
+    }
+
+    fn get_card_value(rank: &Rank) -> Result<usize, CardError> {
+        match rank {
+            Rank::Jack | Rank::Queen | Rank::King => Ok(10),
+            Rank::Ace => Ok(11),
+            _ => match rank.to_string().parse::<usize>() {
+                Ok(n) => Ok(n),
+                Err(_) => Err(CardError::InvalidNumber {
+                    value: rank.to_string(),
+                }),
+            },
+        }
     }
 }
 
@@ -174,11 +175,11 @@ mod tests {
 
     #[test]
     fn test_get_card_value() -> Result<(), CardError> {
-        let jack_value: usize = get_card_value(&Rank::Jack)?;
-        let queen_value: usize = get_card_value(&Rank::Queen)?;
-        let king_value: usize = get_card_value(&Rank::King)?;
-        let ace_value: usize = get_card_value(&Rank::Ace)?;
-        let card_value: usize = get_card_value(&Rank::Nine)?;
+        let jack_value: usize = Card::get_card_value(&Rank::Jack)?;
+        let queen_value: usize = Card::get_card_value(&Rank::Queen)?;
+        let king_value: usize = Card::get_card_value(&Rank::King)?;
+        let ace_value: usize = Card::get_card_value(&Rank::Ace)?;
+        let card_value: usize = Card::get_card_value(&Rank::Nine)?;
 
         assert_eq!(jack_value, 10);
         assert_eq!(queen_value, 10);

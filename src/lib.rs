@@ -1,7 +1,7 @@
 mod card;
 mod deck;
 mod error;
-pub mod game;
+mod game;
 mod person;
 
 pub use card::{Card, Rank, Suit};

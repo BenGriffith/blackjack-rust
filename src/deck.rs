@@ -1,4 +1,4 @@
-use crate::card::{Card, Rank, Suit, get_card_value};
+use crate::card::{Card, Rank, Suit};
 use crate::error::CardError;
 
 #[derive(Debug, Clone)]
@@ -24,10 +24,9 @@ impl Deck {
         let deck_cards: Vec<Result<Card, CardError>> = suits
             .iter()
             .flat_map(|suit| {
-                cards.iter().map(|card| -> Result<Card, CardError> {
-                    let card_value: usize = get_card_value(card)?;
-                    Ok(Card::new(suit.clone(), card.clone(), card_value))
-                })
+                cards
+                    .iter()
+                    .map(|card| Card::new(suit.clone(), card.clone()))
             })
             .collect();
         deck_cards
