@@ -1,9 +1,8 @@
 use crate::card::{Card, Rank, Suit};
-use crate::error::CardError;
 
 #[derive(Debug, Clone)]
 pub struct Deck {
-    cards: Vec<Result<Card, CardError>>,
+    cards: Vec<Card>,
 }
 
 impl Default for Deck {
@@ -16,23 +15,23 @@ impl Deck {
     pub fn new() -> Self {
         let cards: Vec<Rank> = Card::get_cards();
         let suits: Vec<Suit> = Card::get_suits();
-        let deck_cards: Vec<Result<Card, CardError>> = Self::set_deck(&suits, &cards);
+        let deck_cards: Vec<Card> = Self::set_deck(&suits, &cards);
         Self { cards: deck_cards }
     }
 
-    fn set_deck(suits: &[Suit], cards: &[Rank]) -> Vec<Result<Card, CardError>> {
-        let deck_cards: Vec<Result<Card, CardError>> = suits
+    fn set_deck(suits: &[Suit], cards: &[Rank]) -> Vec<Card> {
+        let deck_cards: Vec<Card> = suits
             .iter()
             .flat_map(|suit| {
                 cards
                     .iter()
-                    .map(|card| Card::new(suit.clone(), card.clone()))
+                    .map(move |card| Card::new(suit.clone(), card.clone()))
             })
             .collect();
         deck_cards
     }
 
-    pub fn cards(&self) -> &Vec<Result<Card, CardError>> {
+    pub fn cards(&self) -> &Vec<Card> {
         &self.cards
     }
 }
@@ -54,7 +53,7 @@ mod tests {
     fn test_deck_suits() {
         let deck: Deck = Deck::new();
         let mut suits: HashSet<String> = HashSet::new();
-        for card in deck.cards.iter().flatten() {
+        for card in deck.cards {
             suits.insert(card.suit().to_string());
         }
         assert_eq!(suits.len(), 4);
@@ -69,15 +68,13 @@ mod tests {
         let deck: Deck = Deck::new();
         let mut suit_face_cards: HashMap<String, Vec<String>> = HashMap::new();
 
-        for suit in deck.cards.iter().flatten() {
+        for suit in &deck.cards {
             let mut face_cards: Vec<String> = Vec::new();
             for _card in &deck.cards {
-                if let Ok(face_card) = _card
-                    && face_card.suit() == suit.suit()
-                {
-                    match face_card.rank() {
+                if _card.suit() == suit.suit() {
+                    match _card.rank() {
                         Rank::Jack | Rank::Queen | Rank::King => {
-                            face_cards.push(face_card.rank().to_string())
+                            face_cards.push(_card.rank().to_string())
                         }
                         _ => continue,
                     }
@@ -98,17 +95,15 @@ mod tests {
         let deck: Deck = Deck::new();
         let mut suit_nonface_cards: HashMap<String, Vec<String>> = HashMap::new();
 
-        for s in deck.cards.iter().flatten() {
+        for s in &deck.cards {
             let mut nonface_cards: Vec<String> = vec![];
 
             for card in &deck.cards {
-                if let Ok(c) = card
-                    && c.suit() == s.suit()
-                {
+                if card.suit() == s.suit() {
                     let is_nonface_card =
-                        !matches!(c.rank(), Rank::Jack | Rank::Queen | Rank::King);
+                        !matches!(card.rank(), Rank::Jack | Rank::Queen | Rank::King);
                     if is_nonface_card {
-                        nonface_cards.push(c.rank().to_string());
+                        nonface_cards.push(card.rank().to_string());
                     }
                 }
             }
@@ -127,11 +122,7 @@ mod tests {
     #[test]
     fn test_deck_card_values_sum() {
         let deck: Deck = Deck::new();
-        let total_value: usize = deck
-            .cards
-            .iter()
-            .map(|c| if let Ok(card) = c { card.value() } else { &0 })
-            .sum();
+        let total_value: usize = deck.cards.iter().map(|c| c.value()).sum();
         assert_eq!(total_value, 380);
     }
 }
