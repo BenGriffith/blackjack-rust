@@ -2,27 +2,23 @@ use crate::card::Card;
 use crate::error::GameError;
 use std::vec::Vec;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct HandState {
     hand: Vec<Card>,
     hand_value: isize,
 }
 
 impl HandState {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             hand: Vec::new(),
             hand_value: 0,
         }
     }
 
-    // pub fn calculate_hand_value(&mut self, value: isize) -> Result<isize, GameError> {
-    //     if value <= 0 {
-    //         return Err(GameError::InvalidScore);
-    //     }
-    //     self.hand_value += value;
-    //     Ok(self.hand_value)
-    // }
+    pub fn calculate_hand_value(&mut self) -> Result<isize, GameError> {
+        todo!()
+    }
 
     pub fn add_card(&mut self, card: Card) {
         self.hand.push(card)
@@ -86,21 +82,40 @@ impl Dealer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::card::{Rank, Suit};
 
-    // test handstate creation
-    // test handstate invalid
-    // test handstate calculate hand value
-    // test handstate get hand
-    // test handstate get hand value
-    // test player creation
-    // test player place bet
-    // test player invalid bet
-    // test dealer creation
+    #[test]
+    fn test_hand() {
+        let hand = HandState::new();
+        assert!(hand.hand.is_empty());
+        assert_eq!(hand.hand_value, 0);
+    }
+
+    #[test]
+    fn test_hand_add_card() {
+        let mut hand = HandState::new();
+        let card = Card::new(Suit::Hearts, Rank::Two);
+        hand.add_card(card);
+        assert_eq!(hand.hand, vec![Card::new(Suit::Hearts, Rank::Two)]);
+        assert_eq!(hand.hand.iter().len(), 1);
+    }
+
+    #[test]
+    fn test_get_hand() {
+        let mut hand = HandState::new();
+        let first_card = Card::new(Suit::Clubs, Rank::Three);
+        let second_card = Card::new(Suit::Diamonds, Rank::Six);
+        let expected = vec![first_card.clone(), second_card.clone()];
+        hand.add_card(first_card);
+        hand.add_card(second_card);
+        assert_eq!(hand.get_hand(), &expected);
+    }
+
     #[test]
     fn test_player_hand() {
         let mut player = Player::new();
-        let first_card = Card::new("Clubs".to_string(), "Queen".to_string(), 10);
-        let second_card = Card::new("Spades".to_string(), "Ace".to_string(), 11);
+        let first_card = Card::new(Suit::Clubs, Rank::Queen);
+        let second_card = Card::new(Suit::Spades, Rank::Ace);
         player.hand.add_card(first_card);
         player.hand.add_card(second_card);
         assert!(!player.hand.get_hand().is_empty());
@@ -108,10 +123,30 @@ mod tests {
     }
 
     #[test]
+    fn test_player_valid_bet() -> Result<(), GameError> {
+        let mut player = Player::new();
+        let first_card = Card::new(Suit::Diamonds, Rank::Jack);
+        player.hand.add_card(first_card);
+        let _ = player.place_bet(5)?;
+        assert_eq!(player.bet, 5);
+        Ok(())
+    }
+
+    #[test]
+    fn test_player_invalid_bet() -> Result<(), GameError> {
+        let mut player = Player::new();
+        let first_card = Card::new(Suit::Spades, Rank::Ten);
+        player.hand.add_card(first_card);
+        let bet = player.place_bet(-10);
+        assert!(matches!(bet, Err(GameError::InvalidBet)));
+        Ok(())
+    }
+
+    #[test]
     fn test_dealer_hand() {
         let mut dealer = Dealer::new();
-        let first_card = Card::new("Hearts".to_string(), "Jack".to_string(), 10);
-        let second_card = Card::new("Diamonds".to_string(), "King".to_string(), 10);
+        let first_card = Card::new(Suit::Hearts, Rank::Jack);
+        let second_card = Card::new(Suit::Diamonds, Rank::King);
         dealer.hand.add_card(first_card);
         dealer.hand.add_card(second_card);
         assert_eq!(dealer.hand.get_hand().len(), 2);

@@ -56,7 +56,7 @@ impl fmt::Display for Rank {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Card {
     suit: Suit,
     rank: Rank,
