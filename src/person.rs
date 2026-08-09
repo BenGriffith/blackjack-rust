@@ -24,11 +24,11 @@ impl HandState {
         self.hand.push(card)
     }
 
-    pub fn get_hand(&self) -> &Vec<Card> {
+    pub fn hand(&self) -> &Vec<Card> {
         &self.hand
     }
 
-    pub fn get_hand_value(&self) -> &isize {
+    pub fn hand_value(&self) -> &isize {
         &self.hand_value
     }
 }
@@ -108,7 +108,7 @@ mod tests {
         let expected = vec![first_card.clone(), second_card.clone()];
         hand.add_card(first_card);
         hand.add_card(second_card);
-        assert_eq!(hand.get_hand(), &expected);
+        assert_eq!(hand.hand(), &expected);
     }
 
     #[test]
@@ -118,8 +118,8 @@ mod tests {
         let second_card = Card::new(Suit::Spades, Rank::Ace);
         player.hand.add_card(first_card);
         player.hand.add_card(second_card);
-        assert!(!player.hand.get_hand().is_empty());
-        assert_eq!(player.hand.get_hand().len(), 2);
+        assert!(!player.hand.hand().is_empty());
+        assert_eq!(player.hand.hand().len(), 2);
     }
 
     #[test]
@@ -149,6 +149,6 @@ mod tests {
         let second_card = Card::new(Suit::Diamonds, Rank::King);
         dealer.hand.add_card(first_card);
         dealer.hand.add_card(second_card);
-        assert_eq!(dealer.hand.get_hand().len(), 2);
+        assert_eq!(dealer.hand.hand().len(), 2);
     }
 }
