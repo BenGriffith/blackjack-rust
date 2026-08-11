@@ -1,4 +1,5 @@
 use crate::card::{Card, Rank, Suit};
+use crate::error::GameError;
 use rand::prelude::SliceRandom;
 use rand::rng;
 
@@ -36,13 +37,15 @@ impl Deck {
         deck_cards
     }
 
-    pub fn cards(&self) -> &Vec<Card> {
-        &self.cards
-    }
+    // pub fn cards(&self) -> &Vec<Card> {
+    //     &self.cards
+    // }
 
     // create a test for this function
-    pub fn deal_card(&mut self) -> Option<Card> {
-        self.cards.pop()
+    pub fn remove_card(&mut self) -> Result<Card, GameError> {
+        let maybe_card = self.cards.pop();
+        let card = maybe_card.ok_or(GameError::NoCard)?;
+        Ok(card)
     }
 }
 

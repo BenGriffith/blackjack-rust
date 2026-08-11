@@ -4,7 +4,7 @@ use blackjack_rust::{Dealer, Player};
 
 fn main() -> Result<(), GameError> {
     let mut game = Game::new();
-    if game.start()? {
+    if Game::start()? {
         let mut player = Player::new();
         let mut dealer = Dealer::new();
         game.run(&mut player, &mut dealer)?;

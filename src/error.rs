@@ -8,6 +8,7 @@ pub enum GameError {
     InvalidResponse,
     InvalidNumber,
     Io(io::Error),
+    NoCard,
 }
 
 impl From<io::Error> for GameError {
@@ -24,6 +25,7 @@ impl fmt::Display for GameError {
             GameError::InvalidResponse => write!(f, "please enter an acceptable value"),
             GameError::InvalidNumber => write!(f, "please enter a valid number"),
             GameError::Io(err) => write!(f, "{}", err),
+            GameError::NoCard => write!(f, "there are no cards remaining"),
         }
     }
 }

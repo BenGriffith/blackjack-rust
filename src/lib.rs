@@ -2,10 +2,9 @@ mod card;
 mod deck;
 mod error;
 mod game;
+mod message;
 mod person;
 
-pub use card::{Card, Rank, Suit};
-pub use deck::Deck;
-pub use error::GameError;
-pub use game::Game;
-pub use person::{Dealer, Player};
+pub use crate::error::GameError;
+pub use crate::game::Game;
+pub use crate::person::{Dealer, Player};
