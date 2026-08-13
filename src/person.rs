@@ -2,10 +2,14 @@ use crate::card::Card;
 use crate::error::GameError;
 use std::vec::Vec;
 
+pub trait Stats {
+    fn print_stats(&self);
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct HandState {
     hand: Vec<Card>,
-    hand_value: isize,
+    hand_value: usize,
 }
 
 impl HandState {
@@ -16,20 +20,30 @@ impl HandState {
         }
     }
 
-    pub fn calculate_hand_value(&mut self) -> Result<isize, GameError> {
-        todo!()
+    pub fn calculate_hand_value(&mut self) {
+        self.hand_value = self.hand.iter().map(|card| card.value()).sum()
     }
 
     pub fn add_card(&mut self, card: Card) {
-        self.hand.push(card)
+        self.hand.push(card);
+        self.calculate_hand_value();
     }
 
     pub fn hand(&self) -> &Vec<Card> {
         &self.hand
     }
 
-    pub fn hand_value(&self) -> &isize {
+    pub fn hand_value(&self) -> &usize {
         &self.hand_value
+    }
+
+    pub fn print_hand(&self) -> String {
+        let hand: Vec<String> = self
+            .hand
+            .iter()
+            .map(|card| format!("({}, {})", card.suit(), card.rank()))
+            .collect();
+        hand.join(", ")
     }
 }
 
@@ -59,6 +73,18 @@ impl Player {
         self.bet = value;
         Ok(self.bet)
     }
+
+    pub fn bet(&self) -> &isize {
+        &self.bet
+    }
+}
+
+impl Stats for Player {
+    fn print_stats(&self) {
+        println!("Player Bet: {}", self.bet);
+        println!("Player Hand Value: {}", self.hand.hand_value);
+        println!("Player Hand: {}", self.hand.print_hand());
+    }
 }
 
 pub struct Dealer {
@@ -76,6 +102,13 @@ impl Dealer {
         Self {
             hand: HandState::new(),
         }
+    }
+}
+
+impl Stats for Dealer {
+    fn print_stats(&self) {
+        println!("Dealer Hand Value: {}", self.hand.hand_value);
+        println!("Dealer Hand: {}", self.hand.print_hand());
     }
 }
 

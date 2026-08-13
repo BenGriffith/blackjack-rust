@@ -1,4 +1,5 @@
 use crate::error::GameError;
+use crate::person::{Dealer, Player, Stats};
 use std::io::{self, Write};
 use std::process;
 use std::thread;
@@ -11,6 +12,8 @@ pub const BET: &str = "How much would you like to bet? ";
 // pub const ACTION: &str = "Choose action: [h]it or [s]tand ";
 pub const GOODBYE: &str = "Goodbye!";
 pub const DELAY: u64 = 1;
+pub const PLAYER: &str = "Player";
+pub const DEALER: &str = "Dealer";
 
 pub struct Prompt;
 pub struct Message;
@@ -49,9 +52,21 @@ impl Prompt {
 }
 
 impl Message {
-    pub fn deal_card() {
-        println!("Dealing Card...");
+    pub fn deal_card(person: &str) {
+        println!("Dealing {} Card...", person);
         let sleep = Duration::from_secs(DELAY);
         thread::sleep(sleep);
+    }
+
+    pub fn round_result(player: &Player, dealer: &Dealer, first_round: bool) {
+        if first_round {
+            println!("Result after First Round");
+        } else {
+            println!("Final Result");
+        }
+        println!("---------------");
+        player.print_stats();
+        player.hand.print_hand();
+        dealer.print_stats();
     }
 }
