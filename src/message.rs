@@ -1,10 +1,8 @@
 use crate::constants::*;
 use crate::error::GameError;
-use crate::person::{Dealer, Player, Stats};
+use crate::person::Player;
 use std::io::{self, Write};
 use std::process;
-use std::thread;
-use std::time::Duration;
 
 pub struct Prompt;
 pub struct Message;
@@ -45,37 +43,25 @@ impl Prompt {
 impl Message {
     pub fn deal_card(person: &str) {
         println!("Dealing {} Card...", person);
-        let sleep = Duration::from_secs(DELAY);
-        thread::sleep(sleep);
     }
 
-    pub fn round_result(player: &Player, dealer: &Dealer, first_round: bool) {
+    pub fn round_result(first_round: bool) {
         if first_round {
             println!("Result after First Round");
         } else {
             println!("Final Result");
         }
         println!("---------------");
-        player.print_stats();
-        player.hand.print_hand();
-        dealer.print_stats();
     }
 
-    pub fn process_blackjack(person: &str, player: &Player, dealer: &Dealer) {
-        match (person, player.hand.hand_value()) {
-            ("Player", BLACKJACK) => {
-                Message::round_result(player, dealer, false);
-                println!(
-                    "Congratulations! You scored Blackjack and win {}!",
-                    player.bet() * PRIZE
-                );
-            }
-            ("Player", value) if value > BLACKJACK => {
-                Message::round_result(player, dealer, false);
-                println!("BUST! House wins!");
-            }
-            ("Player", _) => Message::round_result(player, dealer, false),
-            (_, _) => todo!(),
-        }
+    pub fn player_blackjack(player: &Player) {
+        println!(
+            "Congratulation! You scored Blackjack and win {}",
+            player.bet() * PRIZE
+        )
+    }
+
+    pub fn player_bust() {
+        println!("BUST! House wins!");
     }
 }
