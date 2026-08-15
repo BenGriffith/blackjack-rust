@@ -1,6 +1,6 @@
 use crate::deck::Deck;
 use crate::error::GameError;
-use crate::message::{DEALER, Message, PLAYER, Prompt};
+use crate::message::{Message, Prompt};
 use crate::person::{Dealer, Player};
 
 pub struct Game {
@@ -31,15 +31,23 @@ impl Game {
     }
 
     fn first_round(&mut self, player: &mut Player, dealer: &mut Dealer) -> Result<(), GameError> {
-        Message::deal_card(PLAYER);
+        let player_str = player.to_string();
+        let dealer_str = dealer.to_string();
+
+        Message::deal_card(&player_str);
         player.hand.add_card(self.deck.remove_card()?);
-        Message::deal_card(DEALER);
+
+        Message::deal_card(&dealer_str);
         dealer.hand.add_card(self.deck.remove_card()?);
-        Message::deal_card(PLAYER);
+
+        Message::deal_card(&player_str);
         player.hand.add_card(self.deck.remove_card()?);
-        Message::deal_card(DEALER);
+
+        Message::deal_card(&dealer_str);
         dealer.hand.add_card(self.deck.remove_card()?);
+
         Message::round_result(player, dealer, true);
+        Message::process_blackjack(&player_str, player, dealer);
         Ok(())
     }
 }

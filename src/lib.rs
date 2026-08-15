@@ -1,4 +1,5 @@
 mod card;
+mod constants;
 mod deck;
 mod error;
 mod game;

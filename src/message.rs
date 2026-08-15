@@ -1,19 +1,10 @@
+use crate::constants::*;
 use crate::error::GameError;
 use crate::person::{Dealer, Player, Stats};
 use std::io::{self, Write};
 use std::process;
 use std::thread;
 use std::time::Duration;
-
-pub const WELCOME: &str = "Welcome to Blackjack!";
-pub const INVITE: &str = "Would you like to play a game? [y/n] ";
-pub const BET: &str = "How much would you like to bet? ";
-// pub const PLAY_AGAIN: &str = "Would you like to play again? [y/n] ";
-// pub const ACTION: &str = "Choose action: [h]it or [s]tand ";
-pub const GOODBYE: &str = "Goodbye!";
-pub const DELAY: u64 = 1;
-pub const PLAYER: &str = "Player";
-pub const DEALER: &str = "Dealer";
 
 pub struct Prompt;
 pub struct Message;
@@ -68,5 +59,23 @@ impl Message {
         player.print_stats();
         player.hand.print_hand();
         dealer.print_stats();
+    }
+
+    pub fn process_blackjack(person: &str, player: &Player, dealer: &Dealer) {
+        match (person, player.hand.hand_value()) {
+            ("Player", BLACKJACK) => {
+                Message::round_result(player, dealer, false);
+                println!(
+                    "Congratulations! You scored Blackjack and win {}!",
+                    player.bet() * PRIZE
+                );
+            }
+            ("Player", value) if value > BLACKJACK => {
+                Message::round_result(player, dealer, false);
+                println!("BUST! House wins!");
+            }
+            ("Player", _) => Message::round_result(player, dealer, false),
+            (_, _) => todo!(),
+        }
     }
 }
