@@ -1,5 +1,6 @@
 use crate::card::Card;
 use crate::error::GameError;
+use std::fmt;
 use std::vec::Vec;
 
 pub trait Stats {
@@ -47,6 +48,7 @@ impl HandState {
     }
 }
 
+#[derive(Debug)]
 pub struct Player {
     bet: isize,
     pub hand: HandState,
@@ -79,14 +81,21 @@ impl Player {
     }
 }
 
-impl Stats for Player {
-    fn print_stats(&self) {
-        println!("Player Bet: {}", self.bet);
-        println!("Player Hand Value: {}", self.hand.hand_value);
-        println!("Player Hand: {}", self.hand.print_hand());
+impl fmt::Display for Player {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Player")
     }
 }
 
+impl Stats for Player {
+    fn print_stats(&self) {
+        println!("{} Bet: {}", self, self.bet);
+        println!("{} Hand Value: {}", self, self.hand.hand_value);
+        println!("{} Hand: {}", self, self.hand.print_hand());
+    }
+}
+
+#[derive(Debug)]
 pub struct Dealer {
     pub hand: HandState,
 }
@@ -105,10 +114,16 @@ impl Dealer {
     }
 }
 
+impl fmt::Display for Dealer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Dealer")
+    }
+}
+
 impl Stats for Dealer {
     fn print_stats(&self) {
-        println!("Dealer Hand Value: {}", self.hand.hand_value);
-        println!("Dealer Hand: {}", self.hand.print_hand());
+        println!("{} Hand Value: {}", self, self.hand.hand_value);
+        println!("{} Hand: {}", self, self.hand.print_hand());
     }
 }
 
