@@ -38,6 +38,16 @@ impl Prompt {
             Err(_) => Err(GameError::InvalidNumber),
         }
     }
+
+    pub fn player_move() -> Result<String, GameError> {
+        print!("{}", MOVE);
+        io::stdout().flush().unwrap();
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+
+        Ok(input)
+    }
 }
 
 impl Message {
