@@ -68,12 +68,12 @@ impl Player {
         }
     }
 
-    pub fn place_bet(&mut self, value: isize) -> Result<isize, GameError> {
+    pub fn place_bet(&mut self, value: isize) -> Result<(), GameError> {
         if value <= 0 {
             return Err(GameError::InvalidBet);
         }
         self.bet = value;
-        Ok(self.bet)
+        Ok(())
     }
 
     pub fn bet(&self) -> &isize {
@@ -175,7 +175,7 @@ mod tests {
         let mut player = Player::new();
         let first_card = Card::new(Suit::Diamonds, Rank::Jack);
         player.hand.add_card(first_card);
-        let _ = player.place_bet(5)?;
+        player.place_bet(5)?;
         assert_eq!(player.bet, 5);
         Ok(())
     }

@@ -66,12 +66,24 @@ impl Message {
 
     pub fn player_blackjack(player: &Player) {
         println!(
-            "Congratulation! You scored Blackjack and win {}",
+            "Congratulations! You scored Blackjack and win {}!",
             player.bet() * PRIZE
         )
     }
 
     pub fn player_bust() {
         println!("BUST! House wins!");
+    }
+
+    pub fn player_wins(player: &Player) {
+        println!("Congratulations! You win {}!", player.bet() & PRIZE)
+    }
+
+    pub fn tie() {
+        println!("Keep your money. We have a Tie!")
+    }
+
+    pub fn dealer_wins() {
+        println!("Bummer! House wins!")
     }
 }
