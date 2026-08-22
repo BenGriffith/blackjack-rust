@@ -1,10 +1,10 @@
 pub const WELCOME: &str = "Welcome to Blackjack!";
-pub const INVITE: &str = "Would you like to play a game? [y/n] ";
+pub const INVITE: &str = "Would you like to play a game? [y]es or n[o] ";
 pub const BET: &str = "How much would you like to bet? ";
 // pub const PLAY_AGAIN: &str = "Would you like to play again? [y/n] ";
-pub const MOVE: &str = "Choose action: [h]it or [s]tand ";
+pub const MOVE: &str = "Would you like another card? [h]it or [s]tay ";
 pub const GOODBYE: &str = "Goodbye!";
 pub const DELAY: u64 = 1;
 pub const BLACKJACK: &usize = &21;
 pub const PRIZE: &isize = &2;
-// pub const DEALER_SCORE_MIN: &usize = &16;
+pub const DEALER_SCORE_MIN: &usize = &16;

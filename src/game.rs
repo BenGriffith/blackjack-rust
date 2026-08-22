@@ -15,7 +15,8 @@ pub struct Game {
 enum GameResult {
     Blackjack,
     Bust,
-    Move,
+    // Move,
+    Other,
 }
 
 enum PlayerMove {
@@ -41,17 +42,21 @@ impl Game {
 
     pub fn run(&mut self, player: &mut Player, dealer: &mut Dealer) -> Result<(), GameError> {
         let first_round = self.first_round(player, dealer)?;
-        // let is_last_round = matches!(first_round, GameResult::Move);
 
         match first_round {
             GameResult::Blackjack => Message::player_blackjack(player),
             GameResult::Bust => Message::player_bust(),
-            GameResult::Move => {
-                let last_round = self.last_round(player)?;
-                match last_round {
-                    GameResult::Blackjack => Message::player_blackjack(player),
-                    GameResult::Bust => Message::player_bust(),
-                    GameResult::Move => {
+            // GameResult::Move => {
+            GameResult::Other => {
+                let (last_round, person) = self.last_round(player, dealer)?;
+                match (last_round, person.as_str()) {
+                    (GameResult::Blackjack, "Player") => Message::player_blackjack(player),
+                    (GameResult::Bust, "Player") => Message::player_bust(),
+                    (GameResult::Blackjack, "Dealer") => Message::dealer_blackjack(),
+                    (GameResult::Bust, "Dealer") => Message::dealer_bust(player),
+                    _ => {
+                        // GameResult::Move => {
+                        // self.print_game_summary(player, dealer, false);
                         self.compare_player_dealer_cards(player, dealer);
                     }
                 }
@@ -75,24 +80,49 @@ impl Game {
         player.hand.add_card(self.deal_card(&player_str)?);
         dealer.hand.add_card(self.deal_card(&dealer_str)?);
 
-        self.print_round_summary(player, dealer, true);
-        let result = self.process_person_hand(player);
+        self.print_game_summary(player, dealer, true);
+        // let result = self.process_hand(player);
+        let result = self.process_hand(player.hand.hand_value());
         Ok(result)
     }
 
-    fn last_round(&mut self, player: &mut Player) -> Result<GameResult, GameError> {
+    fn last_round(
+        &mut self,
+        player: &mut Player,
+        dealer: &mut Dealer,
+    ) -> Result<(GameResult, String), GameError> {
         let player_move = self.player_move()?;
         match player_move {
             PlayerMove::Hit => {
                 player.hand.add_card(self.deal_card(&player.to_string())?);
-                let game_result = self.process_person_hand(player);
-                Ok(game_result)
+                self.print_game_summary(player, dealer, false);
+                // let game_result = self.process_hand(player);
+                let game_result = self.process_hand(player.hand.hand_value());
+                Ok((game_result, player.to_string()))
             }
             PlayerMove::Stand => {
-                let game_result = self.process_person_hand(player);
-                Ok(game_result)
+                // todo!("player action stay");
+                // todo!("increase dealer score")
+                self.dealer_min_score_met(dealer)?;
+                self.print_game_summary(player, dealer, false);
+                // let game_result = self.process_hand(player);
+                let game_result = self.process_hand(dealer.hand.hand_value());
+                Ok((game_result, dealer.to_string()))
             }
         }
+    }
+
+    fn increase_dealer_score(&mut self, dealer: &mut Dealer) -> Result<(), GameError> {
+        dealer.hand.add_card(self.deal_card(&dealer.to_string())?);
+        self.dealer_min_score_met(dealer)?;
+        Ok(())
+    }
+
+    fn dealer_min_score_met(&mut self, dealer: &mut Dealer) -> Result<(), GameError> {
+        if dealer.hand.hand_value() < DEALER_SCORE_MIN {
+            self.increase_dealer_score(dealer)?;
+        }
+        Ok(())
     }
 
     fn compare_player_dealer_cards(&self, player: &Player, dealer: &Dealer) {
@@ -109,6 +139,15 @@ impl Game {
         Ok(())
     }
 
+    fn player_move(&self) -> Result<PlayerMove, GameError> {
+        let input = Prompt::player_move()?;
+        let response = input.to_uppercase();
+        match response.trim() {
+            "H" | "HIT" => Ok(PlayerMove::Hit),
+            _ => Ok(PlayerMove::Stand),
+        }
+    }
+
     fn deal_card(&mut self, person: &str) -> Result<Card, GameError> {
         Message::deal_card(person);
         let sleep = Duration::from_secs(DELAY);
@@ -117,27 +156,22 @@ impl Game {
         Ok(card)
     }
 
-    fn print_round_summary(&self, player: &Player, dealer: &Dealer, first_round: bool) {
+    fn print_game_summary(&self, player: &Player, dealer: &Dealer, first_round: bool) {
         Message::round_result(first_round);
         player.print_stats();
         player.hand.print_hand();
         dealer.print_stats();
     }
 
-    fn process_person_hand(&self, player: &Player) -> GameResult {
-        match player.hand.hand_value() {
+    // generic like parameter that is number and then number compares and determines action
+    // possibly change move variant to other variant
+    // fn process_hand(&self, player: &Player) -> GameResult {
+    fn process_hand(&self, hand_value: &usize) -> GameResult {
+        match hand_value {
             BLACKJACK => GameResult::Blackjack,
             value if value > BLACKJACK => GameResult::Bust,
-            _ => GameResult::Move,
-        }
-    }
-
-    fn player_move(&self) -> Result<PlayerMove, GameError> {
-        let input = Prompt::player_move()?;
-        let response = input.to_uppercase();
-        match response.trim() {
-            "H" | "HIT" => Ok(PlayerMove::Hit),
-            _ => Ok(PlayerMove::Stand),
+            // _ => GameResult::Move,
+            _ => GameResult::Other,
         }
     }
 }
